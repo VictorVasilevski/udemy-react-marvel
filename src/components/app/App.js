@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import AppHeader from "../appHeader/AppHeader";
+import RandomChar from "../randomChar/RandomChar";
+import CharList from "../charList/CharList";
+import CharInfo from "../charInfo/CharInfo";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import decoration from '../../resources/img/vision.png';
+
+const App = () => {
+    return (
+        <div className="app">
+            <AppHeader/>
+            <main>
+                <RandomChar/>
+                <div className="char__content">
+                    <CharList/>
+                    <CharInfo/>
+                </div>
+                <img className="bg-decoration" src={decoration} alt="vision"/>
+            </main>
+        </div>
+    )
 }
 
 export default App;
