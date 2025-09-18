@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
@@ -13,6 +13,8 @@ class CharList extends Component {
         newItemLoading: false,
         offset: 0,
         charsEnded: false,
+        elements: [],
+        charSelected: null,
     }
 
     marvelService = new MarvelService();
@@ -53,12 +55,38 @@ class CharList extends Component {
         })
     }
 
+    setCharElementRef = (element) => {
+        this.setState(state => state.elements.push(element));
+    }
+
+    onCharCardSelected = (charId) => {
+        this.props.onCharSelected(charId);
+        const charIdx = this.state.chars.findIndex(c => c.id === charId);
+        const newCharSelected = this.state.elements[charIdx]
+        this.setState(state => {
+            if (state.charSelected) {
+                state.charSelected.classList.remove('char__item_selected');
+                if (state.charSelected === newCharSelected) return {charSelected: null}
+            }
+            newCharSelected.classList.add('char__item_selected');
+            return {charSelected: newCharSelected}
+        })
+    }
+
     renderChars = (charsList) => {
         const charsElements = charsList.map(char => {
             return (
                 <li className="char__item"
+                    tabIndex={0}
+                    ref={this.setCharElementRef}
                     key={char.id}
-                    onClick={() => this.props.onCharSelected(char.id)}>
+                    // onClick={() => this.props.onCharSelected(char.id)}
+                    onClick={() => this.onCharCardSelected(char.id)}
+                    onKeyDown={(e) => {
+                        if (e.key === ' ' || e.key === "Enter") {
+                            this.onCharCardSelected(char.id)
+                        }
+                    }}>
                     <img src={char.thumbnail} alt={char.name}/>
                     <div className="char__name">{char.name}</div>
                 </li>
