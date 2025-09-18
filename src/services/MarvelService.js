@@ -1,9 +1,16 @@
 class MarvelService {
     _baseUrl = "https://marvel-server-zeta.vercel.app/"
     _apiKey = "d4eecb0c66dedbfae4eab45d312fc1df";
+    _baseOffset = 0;
+    _baseLimit = 9;
 
-    getResource = async (path) => {
-        const url = `${this._baseUrl}${path}?limit=9&apikey=${this._apiKey}`;
+    getResource = async (path, params) => {
+        const queryParams = new URLSearchParams({
+            'apikey': this._apiKey,
+            ...params,
+        }).toString();
+        const url = `${this._baseUrl}${path}?${queryParams}`;
+        console.log(url);
         let res = await fetch(url);
         if (!res.ok) {
             throw new Error(`Failed to fetch resource ${url}. Status: ${res.status}`);
@@ -11,8 +18,8 @@ class MarvelService {
         return await res.json();
     }
 
-    getAllCharacters = async () => {
-        const res = await this.getResource('characters');
+    getAllCharacters = async ({limit = this._baseLimit, offset = this._baseOffset}) => {
+        const res = await this.getResource('characters', {offset, limit});
         console.log(res);
         return res.data.results.map(this._transformCharacter);
     }
