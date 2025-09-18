@@ -13,9 +13,9 @@ class App extends Component {
     }
 
     onCharSelected = (id) => {
-        this.setState({
-            selectedChar: id,
-        })
+        this.setState(({selectedChar}) => ({
+            selectedChar: id === selectedChar ? null : id,
+        }))
     }
 
     render() {
