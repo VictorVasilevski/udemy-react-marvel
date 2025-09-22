@@ -1,73 +1,79 @@
-import { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 import MarvelService from '../../services/MarvelService';
 import './charInfo.scss';
 
-class CharInfo extends Component {
-    state = {
-        char: null,
-        loading: false,
-        error: false,
+function usePreviousCharId(value) {
+    const ref = useRef();
+
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+
+    return ref.current;
+}
+
+function CharInfo(props) {
+    const [char, setChar] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const prevCharId = usePreviousCharId(props.charId);
+
+    const marvelService = new MarvelService();
+
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
     }
 
-    marvelService = new MarvelService();
-
-    onCharLoaded = (char) => {
-        this.setState({char, loading: false})
+    const onCharLoading = () => {
+        setLoading(true);
     }
 
-    onCharLoading = () => {
-        this.setState({loading: true})
+    const onError = () => {
+        setLoading(false);
+        setError(true);
     }
 
-    onError = () => {
-        this.setState({loading: false, error: true})
-    }
-
-    updateChar = () => {
-        const {charId} = this.props;
+    const updateChar = () => {
+        const {charId} = props;
         if (!charId) {
-            if (this.state.char) {
-                this.setState({char: null})
+            if (char) {
+                setChar(null);
             }
             return;
         }
 
-        this.onCharLoading();
-        this.marvelService
+        onCharLoading();
+        marvelService
             .getCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError);
+            .then(onCharLoaded)
+            .catch(onError);
     }
 
-    componentDidMount() {
-        this.updateChar();
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar();
+    useEffect(() => {
+        if (props.charId !== prevCharId) {
+            updateChar();
         }
-    }
+    }, [props.charId, prevCharId]);
 
-    render() {
-        const {char, loading, error} = this.state;
-        const skeleton = char || loading || error ? null : <Skeleton/>;
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error || !char) ? <View char={char}/> : null;
+    useEffect(updateChar, []);
 
-        return (
-            <div className="char__info">
-                {skeleton}
-                {spinner}
-                {errorMessage}
-                {content}
-            </div>
-        )
-    }
+    const skeleton = char || loading || error ? null : <Skeleton/>;
+    const errorMessage = error ? <ErrorMessage/> : null;
+    const spinner = loading ? <Spinner/> : null;
+    const content = !(loading || error || !char) ? <View char={char}/> : null;
+
+    return (
+        <div className="char__info">
+            {skeleton}
+            {spinner}
+            {errorMessage}
+            {content}
+        </div>
+    )
 }
 
 const View = ({char}) => {
