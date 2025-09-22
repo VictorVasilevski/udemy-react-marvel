@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import './charInfo.scss';
 
 function usePreviousCharId(value) {
@@ -17,27 +17,16 @@ function usePreviousCharId(value) {
 
 function CharInfo(props) {
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
     const prevCharId = usePreviousCharId(props.charId);
 
-    const marvelService = new MarvelService();
+    const {loading, error, getCharacter, clearError} = useMarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-    }
-
-    const onCharLoading = () => {
-        setLoading(true);
-    }
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
     }
 
     const updateChar = () => {
+        clearError();
         const {charId} = props;
         if (!charId) {
             if (char) {
@@ -46,20 +35,15 @@ function CharInfo(props) {
             return;
         }
 
-        onCharLoading();
-        marvelService
-            .getCharacter(charId)
-            .then(onCharLoaded)
-            .catch(onError);
+        getCharacter(charId).then(onCharLoaded)
     }
 
+    useEffect(updateChar, []);
     useEffect(() => {
         if (props.charId !== prevCharId) {
             updateChar();
         }
     }, [props.charId, prevCharId]);
-
-    useEffect(updateChar, []);
 
     const skeleton = char || loading || error ? null : <Skeleton/>;
     const errorMessage = error ? <ErrorMessage/> : null;
