@@ -16,6 +16,7 @@ export const useHttp = () => {
             setLoading(true);
             try {
                 const url = `${baseUrl}${path}?${new URLSearchParams(queryParams).toString()}`;
+                console.log(url);
                 const response = await fetch(url, {
                     method, body 
                 });
@@ -23,6 +24,7 @@ export const useHttp = () => {
                     throw new Error(`Failed to fetch resource ${url}. Status: ${response.status}`);
                 }
                 const data = await response.json();
+                console.log(data);
                 setLoading(false);
                 return data;
             } catch(e) {
