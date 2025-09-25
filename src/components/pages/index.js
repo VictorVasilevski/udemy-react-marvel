@@ -1,6 +1,6 @@
 import MainPage from "./MainPage";
 import ComicsPage from "./ComicsPage";
-import Page404 from "./404";
 import SingleComicsPage from "./SingleComicsPage";
+import Page404 from "./404";
 
-export {MainPage, ComicsPage, Page404, SingleComicsPage};
+export {MainPage, ComicsPage, SingleComicsPage, Page404};
