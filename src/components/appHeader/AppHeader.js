@@ -6,9 +6,9 @@ const AppHeader = () => {
     return (
         <header className="app__header">
             <h1 className="app__title">
-                <Link to="/">
+                <NavLink to="/">
                     <span>Marvel</span> information portal
-                </Link>
+                </NavLink>
             </h1>
             <nav className="app__menu">
                 <ul>
