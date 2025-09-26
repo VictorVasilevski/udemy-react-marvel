@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, createRef } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
@@ -35,7 +36,7 @@ const CharList = (props) => {
     const onCharCardSelected = (charId) => {
         props.onCharSelected(charId);
         const charIdx = chars.findIndex(c => c.id === charId);
-        const newCharSelected = cards.current[charIdx];
+        const newCharSelected = cards.current[charIdx].current;
         setCharSelected(charSelected => {
             if (charSelected) {
                 charSelected.classList.remove('char__item_selected');
@@ -48,25 +49,43 @@ const CharList = (props) => {
 
     const renderChars = (charsList) => {
         const charsElements = charsList.map((char, i) => {
+            let nodeRef;
+            if (!cards.current[i]) {
+                nodeRef = createRef();
+                cards.current[i] = nodeRef;
+            } else {
+                nodeRef = cards.current[i];
+            }
+            
+            
+            const itemBaseClassName = "char__item";
             return (
-                <li className="char__item"
-                    tabIndex={0}
-                    ref={el => cards.current[i] = el}
+                <CSSTransition 
+                    nodeRef={nodeRef}
                     key={char.id}
-                    onClick={() => onCharCardSelected(char.id)}
-                    onKeyDown={(e) => {
-                        if (e.key === ' ' || e.key === "Enter") {
-                            onCharCardSelected(char.id)
-                        }
-                    }}>
-                    <img src={char.thumbnail} alt={char.name}/>
-                    <div className="char__name">{char.name}</div>
-                </li>
+                    in={true} 
+                    timeout={1000} 
+                    classNames={itemBaseClassName}
+                    mountOnEnter>
+                    <li className={itemBaseClassName}
+                        tabIndex={0}
+                        ref={nodeRef}
+                        key={char.id}
+                        onClick={() => onCharCardSelected(char.id)}
+                        onKeyDown={(e) => {
+                            if (e.key === ' ' || e.key === "Enter") {
+                                onCharCardSelected(char.id)
+                            }
+                        }}>
+                        <img src={char.thumbnail} alt={char.name}/>
+                        <div className="char__name">{char.name}</div>
+                    </li>
+                </CSSTransition>
             )
         });
         return (
             <ul className="char__grid">
-                {charsElements}
+                <TransitionGroup component={null}>{charsElements}</TransitionGroup>
             </ul>
         )
     }
