@@ -1,0 +1,54 @@
+@import '../../style/variables.scss';
+
+.name-container {
+    display: grid;
+    grid-template-columns: 250px 100px;
+    column-gap: 25px;
+    input {
+        line-height: 24px;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+    button {
+        margin-top: 39px;
+    }
+}
+.char {
+    &__search {
+        margin-top: 30px;
+        padding: 25px;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
+        background-color: #fff;
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 24px;
+        }
+
+        input {
+            margin-top: 15px;
+            padding-left: 10px;
+            width: 100%;
+            line-height: 38px;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            border: none;
+            font-size: 14px;
+        }
+        &-failure {
+            color: $main-color;
+            margin-top: 15px;
+        }
+        &-success {
+            color: #03710E;
+        }
+        &-validation {
+            display: grid;
+            grid-template-columns: 250px 100px;
+            column-gap: 25px;
+            margin-top: 15px;
+            align-items: baseline;
+            font-weight: bold;
+        }
+    }
+}
