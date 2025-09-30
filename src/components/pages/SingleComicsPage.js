@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import AppBanner from '../appBanner/AppBanner';
 
 import './singleComicPage.scss';
 import { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ const SingleComicsPage = () => {
 
     useEffect(() => {
         requestComics(comicsId)
-    }, [comicsId]);
+    }, []);
 
     const requestComics = (id) => {
         clearError();
@@ -43,6 +44,7 @@ const SingleComicsPage = () => {
 
     return (
         <>
+            <AppBanner/>
             {spinner}
             {errorMessage}
             {content}

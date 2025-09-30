@@ -9,8 +9,8 @@ const useMarvelService = () => {
     const _baseCharLimit = 9;
     const _baseComicsLimit = 8;
 
-    const getAllCharacters = async ({limit = _baseCharLimit, offset = _baseOffset}) => {
-        const res = await request({baseUrl, path: 'characters', queryParams: {offset, limit, apikey: _apiKey}});
+    const getAllCharacters = async ({limit = _baseCharLimit, offset = _baseOffset, params = {}}) => {
+        const res = await request({baseUrl, path: 'characters', queryParams: {...params, offset, limit, apikey: _apiKey}});
         return res.data.results.map(_transformCharacter);
     }
 

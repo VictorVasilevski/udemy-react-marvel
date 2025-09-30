@@ -9,11 +9,13 @@ const Page404 = lazy(() => import('../pages/404'));
 const MainPage = lazy(() => import('../pages/MainPage'));
 const ComicsPage = lazy(() => import('../pages/ComicsPage'));
 const SingleComicsPage = lazy(() => import('../pages/SingleComicsPage'));
+const SingleCharPage = lazy(() => import('../pages/SingleCharPage'));
 
 const App = () => {
     const mainPageRef = useRef();
     const comicsPageRef = useRef();
     const singleComicsPageRef = useRef();
+    const SingleCharPageRef = useRef();
 
     return (
         <Router>
@@ -28,6 +30,13 @@ const App = () => {
                                 element={
                                     <TransitionComponent nodeRef={mainPageRef}>
                                         <MainPage/>
+                                    </TransitionComponent>
+                                }></Route>
+                            <Route
+                                path="/characters/:charId"
+                                element={
+                                    <TransitionComponent nodeRef={SingleCharPageRef}>
+                                        <SingleCharPage/>
                                     </TransitionComponent>
                                 }></Route>
                             {/* Comics */}
