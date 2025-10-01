@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import Skeleton from '../skeleton/Skeleton';
 import useMarvelService from '../../services/MarvelService';
+import setContent from '../../utils/setContent';
 import './charInfo.scss';
 
 function usePreviousCharId(value) {
@@ -19,7 +17,7 @@ function CharInfo(props) {
     const [char, setChar] = useState(null);
     const prevCharId = usePreviousCharId(props.charId);
 
-    const {loading, error, getCharacter, clearError} = useMarvelService();
+    const {getCharacter, clearError, process, setProcess} = useMarvelService();
 
     const onCharLoaded = (char) => {
         setChar(char);
@@ -35,7 +33,9 @@ function CharInfo(props) {
             return;
         }
 
-        getCharacter(charId).then(onCharLoaded)
+        getCharacter(charId)
+            .then(onCharLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
     useEffect(updateChar, []);
@@ -43,27 +43,19 @@ function CharInfo(props) {
         if (props.charId !== prevCharId) {
             updateChar();
         }
-    }, [props.charId, prevCharId]);
-
-    const skeleton = char || loading || error ? null : <Skeleton/>;
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading ? <Spinner/> : null;
-    const content = !(loading || error || !char) ? <View char={char}/> : null;
+    }, [props.charId]);
 
     return (
         <>
             <div className="char__info">
-                {skeleton}
-                {spinner}
-                {errorMessage}
-                {content}
+                {setContent(process, View, char)}
             </div>
         </>
     )
 }
 
-const View = ({char}) => {
-    const {name, description, thumbnail, homepage, wiki, comics} = char;
+const View = ({data}) => {
+    const {name, description, thumbnail, homepage, wiki, comics} = data;
 
     return (
         <>

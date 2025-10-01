@@ -1,8 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
 import AppBanner from '../appBanner/AppBanner';
+import setContent from '../../utils/setContent';
 
 import './singleComicPage.scss';
 import { useEffect, useState } from 'react';
@@ -10,7 +9,7 @@ import { useEffect, useState } from 'react';
 const SingleComicsPage = () => {
     const {comicsId} = useParams();
     const [comics, setComics] = useState(null);
-    const {loading, error, getComics, clearError} = useMarvelService();
+    const {getComics, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         requestComics(comicsId)
@@ -18,7 +17,9 @@ const SingleComicsPage = () => {
 
     const requestComics = (id) => {
         clearError();
-        getComics(id).then(data => setComics(data))
+        getComics(id)
+            .then(data => setComics(data))
+            .then(() => setProcess('confirmed'))
     }
 
     const renderContent = () => {
@@ -38,16 +39,10 @@ const SingleComicsPage = () => {
         )
     }
 
-    const spinner = loading ? <Spinner/> : null;
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const content = comics && !(loading || error) ? renderContent() : null;
-
     return (
         <>
             <AppBanner/>
-            {spinner}
-            {errorMessage}
-            {content}
+            {setContent(process, renderContent)}
         </>
     )
 }
