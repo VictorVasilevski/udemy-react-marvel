@@ -1,4 +1,4 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage as FormikErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,17 +8,13 @@ import './findCharForm.scss'
 
 const FindCharForm = () => {
     const [charInfo, setCharInfo] = useState(null);
+    const [searchValue, setSearchValue] = useState('');
     const {loading, getAllCharacters, clearError} = useMarvelService();
 
     const onSubmit = (name) => {
+        setSearchValue(name);
         clearError();
         getAllCharacters({params: {name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()}}).then(data => setCharInfo(data));
-    }
-
-    const reset = (name) => {
-        if (!name) {
-            setCharInfo(null);
-        }
     }
 
     const validationString = !charInfo ? null : charInfo.length > 0 ?
@@ -40,23 +36,26 @@ const FindCharForm = () => {
             })}
             onSubmit={(values) => onSubmit(values.name)}
             >
-                <Form className="char__search">
-                    <div className='name-container'>
-                        <div className='input-container'>
-                            <label htmlFor='name'>Or find a character by name:</label>
-                            <Field
-                                id="name"
-                                name="name"
-                                type="text"
-                                placeholder="Enter name"
-                                onBlur={(values) => reset(values.name)} />
+                {({values}) => (
+                    <Form className="char__search">
+                        <div className='name-container'>
+                            <div className='input-container'>
+                                <label htmlFor='name'>Or find a character by name:</label>
+                                <Field
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    placeholder="Enter name" />
+                            </div>
+                            <button type="submit" className="button button__main" disabled={loading}>
+                                <div className="inner">FIND</div>
+                            </button>
                         </div>
-                        <button type="submit" className="button button__main" disabled={loading}>
-                            <div className="inner">FIND</div>
-                        </button>
-                    </div>
-                    {validationString}
-                </Form>
+                        <FormikErrorMessage component="div" className="char__search-failure" name="name" />
+                        {/* {validationString} */}
+                        {values.name === searchValue ? validationString : null}
+                    </Form>
+                )}
             </Formik>
     )
 }

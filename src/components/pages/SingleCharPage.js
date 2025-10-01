@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom';
 import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
 import AppBanner from '../appBanner/AppBanner';
+import setContent from '../../utils/setContent';
 
 import './singleCharPage.scss';
 import { useEffect, useState } from 'react';
@@ -10,7 +9,7 @@ import { useEffect, useState } from 'react';
 const SingleCharPage = () => {
     const {charId} = useParams();
     const [char, setChar] = useState(null);
-    const {loading, error, getCharacter, clearError} = useMarvelService();
+    const {getCharacter, clearError, process ,setProcess} = useMarvelService();
 
     useEffect(() => {
         requestCharacter()
@@ -18,7 +17,9 @@ const SingleCharPage = () => {
 
     const requestCharacter = () => {
         clearError();
-        getCharacter(charId).then(data => setChar(data))
+        getCharacter(charId)
+            .then(data => setChar(data))
+            .then(() => setProcess('confirmed'))
     }
 
     const renderContent = () => {
@@ -34,16 +35,10 @@ const SingleCharPage = () => {
         )
     }
 
-    const spinner = loading ? <Spinner/> : null;
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const content = char && !(loading || error) ? renderContent() : null;
-
     return (
         <>
             <AppBanner/>
-            {spinner}
-            {errorMessage}
-            {content}
+            {setContent(process, renderContent)}
         </>
     )
 }
