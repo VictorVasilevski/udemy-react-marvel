@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, createRef } from 'react';
+import { useState, useEffect, useMemo, useRef, createRef } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -42,6 +42,7 @@ const CharList = (props) => {
     }, []);
 
     const onRequest = (offset, initial) => {
+        console.log('or');
         setNewItemLoading(!initial);
         getAllCharacters({offset})
             .then(onCharsLoaded)
@@ -54,7 +55,7 @@ const CharList = (props) => {
         props.onCharSelected(charId);
         const charIdx = chars.findIndex(c => c.id === charId);
         const newCharSelected = cards.current[charIdx].current;
-        setCharSelected(() => {
+        setCharSelected((charSelected) => { 
             if (charSelected) {
                 charSelected.classList.remove('char__item_selected');
                 if (charSelected === newCharSelected) return null
@@ -107,9 +108,13 @@ const CharList = (props) => {
         )
     }
 
+    const elements = useMemo(() => {
+        return setContent(process, () => renderChars(chars), newItemLoading);
+    }, [process]);
+
     return (
         <div className="char__list">
-            {setContent(process, () => renderChars(chars), newItemLoading)}
+            {elements}
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}
